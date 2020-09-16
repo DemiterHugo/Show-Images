@@ -23,3 +23,7 @@ inline fun <reified T:Activity>Context.startActivity(vararg pairs: Pair<String,A
         .apply { putExtras(bundleOf(*pairs)) }
         .also ( ::startActivity)
 }
+
+fun View.setVisible(visible: Boolean){
+    visibility = if(visible) View.VISIBLE else View.GONE
+}

@@ -4,34 +4,28 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import androidx.lifecycle.lifecycleScope
 import com.example.animals1.R
 import com.example.animals1.data.Filter
 import com.example.animals1.data.MediaItem
-import com.example.animals1.data.MediaProvider
 import com.example.animals1.databinding.ActivityMainBinding
 import com.example.animals1.ui.detail.DetailActivity
+import com.example.animals1.ui.setVisible
 import com.example.animals1.ui.startActivity
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
-class MainActivity : AppCompatActivity() {
+
+class MainActivity : AppCompatActivity(), MainPresenter.View {
 
 private lateinit var binding:ActivityMainBinding
-    private val mediaAdapter = MediaAdapter {itemClicked(it) }
+    private val presenter = MainPresenter(this,lifecycleScope)
+    private var mediaAdapter = MediaAdapter {presenter.onItemClicked(it)}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.recycler.adapter = mediaAdapter
-        updateItems()
-    }
-
-    fun itemClicked(mediaItem: MediaItem){
-        startActivity<DetailActivity>("Extra_IDE" to mediaItem.id)
+        presenter.onFilterSelected(Filter.None)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -47,27 +41,20 @@ private lateinit var binding:ActivityMainBinding
             R.id.filter_videos -> Filter.ByType(MediaItem.Type.VIDEO)
             else -> Filter.None
         }
-        updateItems(filter)
+        presenter.onFilterSelected(filter)
         return super.onOptionsItemSelected(item)
     }
 
-    private fun updateItems(filter: Filter = Filter.None){
-        //coger los datos del servidor y actualizar los items del adapter.
-        lifecycleScope.launch {
-            binding.progress.visibility = View.VISIBLE
-            mediaAdapter.items = withContext(Dispatchers.IO){getFilteredItems(filter)}
-            binding.progress.visibility = View.GONE
-        }
 
+    override fun setProgressVisible(visible: Boolean) {
+        binding.progress.setVisible(visible)
     }
 
-    private fun getFilteredItems(filter: Filter): List<MediaItem>{
-        //coger los datos del sevidor y devolver solo una lista filtrada
-        return MediaProvider.getItems().let {
-            when(filter){
-                Filter.None -> it
-                is Filter.ByType -> it.filter { mediaItem -> mediaItem.type == filter.type }
-            }
-        }
+    override fun updateItems(items: List<MediaItem>) {
+        mediaAdapter.items = items
+    }
+
+    override fun navigateToDetail(id: Int) {
+        startActivity<DetailActivity>(DetailActivity.Extra_IDE to id)
     }
 }
