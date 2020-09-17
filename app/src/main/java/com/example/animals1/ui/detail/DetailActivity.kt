@@ -2,23 +2,20 @@ package com.example.animals1.ui.detail
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.MediaStore
-import android.view.View
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.get
 import androidx.lifecycle.lifecycleScope
-import com.example.animals1.R
 import com.example.animals1.data.MediaItem
-import com.example.animals1.data.MediaProvider
 import com.example.animals1.databinding.ActivityDetailBinding
 import com.example.animals1.ui.loadUrl
 import com.example.animals1.ui.setVisible
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
-class DetailActivity : AppCompatActivity(), DetailPresenter.View {
+class DetailActivity : AppCompatActivity() {
 
-    private val presenter = DetailPresenter(this,lifecycleScope)
+    private lateinit var viewModel: DetailViewModel
     lateinit var binding: ActivityDetailBinding
+
     companion object {
         const val Extra_IDE = "DetailActivity:extraId"
     }
@@ -28,20 +25,16 @@ class DetailActivity : AppCompatActivity(), DetailPresenter.View {
         binding = ActivityDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        viewModel = ViewModelProvider(this).get<DetailViewModel>().apply {
+            item.observe(this@DetailActivity, Observer {
+                supportActionBar?.title = it.title
+                binding.detailThumb.loadUrl(it.url)
+                binding.detailVideoIndicator.setVisible(it.type == MediaItem.Type.VIDEO)
+            })
+        }
+
         val itemId = intent.getIntExtra(Extra_IDE,-1)
 
-        presenter.onCreate(itemId)
-    }
-
-    override fun setTitle(title: String) {
-        supportActionBar?.title = title
-    }
-
-    override fun setImage(url: String) {
-        binding.detailThumb.loadUrl(url)
-    }
-
-    override fun setDetailIndicatorVisible(visible: Boolean) {
-        binding.detailVideoIndicator.setVisible(visible)
+        viewModel.onCreate(itemId)
     }
 }
