@@ -13,6 +13,8 @@ import com.example.animals1.data.Filter
 import com.example.animals1.data.MediaItem
 import com.example.animals1.databinding.ActivityMainBinding
 import com.example.animals1.ui.detail.DetailActivity
+import com.example.animals1.ui.getViewModel
+import com.example.animals1.ui.observe
 import com.example.animals1.ui.setVisible
 import com.example.animals1.ui.startActivity
 
@@ -28,10 +30,11 @@ private lateinit var binding:ActivityMainBinding
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModel = ViewModelProvider(this).get<MainViewModel>().apply {
-            progressVisible.observe(this@MainActivity, Observer {binding.progress.setVisible(it)})
-            items.observe(this@MainActivity, Observer{mediaAdapter.items = it})
-            navigateToDetail.observe(this@MainActivity, Observer { ToDetail(it) })
+        viewModel = getViewModel {
+            observe(progressVisible){ binding.progress.setVisible(it)}
+            observe(items){mediaAdapter.items = it}
+            observe(navigateToDetail){
+                it.getContetIfNotHandled()?.let { ToDetail(it) }}
         }
         binding.recycler.adapter = mediaAdapter
         viewModel.onFilterSelected(Filter.None)

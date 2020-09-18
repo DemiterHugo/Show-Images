@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.os.bundleOf
+import androidx.lifecycle.*
 import com.bumptech.glide.Glide
 
 fun ViewGroup.inflate(layoutRes: Int, attach:Boolean=false):View{
@@ -26,4 +27,12 @@ inline fun <reified T:Activity>Context.startActivity(vararg pairs: Pair<String,A
 
 fun View.setVisible(visible: Boolean){
     visibility = if(visible) View.VISIBLE else View.GONE
+}
+
+inline fun <reified T:ViewModel>ViewModelStoreOwner.getViewModel(body: T.() -> Unit = {}):T{
+    return ViewModelProvider(this).get<T>().apply(body)
+}
+
+fun <T>LifecycleOwner.observe(liveData: LiveData<T>, observer: (T) -> Unit){
+    liveData.observe(this, Observer(observer))
 }

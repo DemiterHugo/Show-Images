@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.animals1.data.Filter
 import com.example.animals1.data.MediaItem
 import com.example.animals1.data.MediaProvider
+import com.example.animals1.ui.Event
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,8 +21,8 @@ class MainViewModel(): ViewModel(){
     private val _items = MutableLiveData<List<MediaItem>>()
     val items: LiveData<List<MediaItem>> get() = _items
 
-    private val _navigateToDetail = MutableLiveData<Int>()
-    val navigateToDetail: LiveData<Int> get() = _navigateToDetail
+    private val _navigateToDetail = MutableLiveData<Event<Int>>()
+    val navigateToDetail: LiveData<Event<Int>> get() = _navigateToDetail
 
 
     fun onFilterSelected(filter: Filter){
@@ -42,6 +43,6 @@ class MainViewModel(): ViewModel(){
     }
 
     fun onItemClicked(item: MediaItem){
-        _navigateToDetail.value = item.id
+        _navigateToDetail.value = Event(item.id)
     }
 }

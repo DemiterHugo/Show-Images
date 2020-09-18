@@ -8,7 +8,9 @@ import androidx.lifecycle.get
 import androidx.lifecycle.lifecycleScope
 import com.example.animals1.data.MediaItem
 import com.example.animals1.databinding.ActivityDetailBinding
+import com.example.animals1.ui.getViewModel
 import com.example.animals1.ui.loadUrl
+import com.example.animals1.ui.observe
 import com.example.animals1.ui.setVisible
 
 class DetailActivity : AppCompatActivity() {
@@ -25,12 +27,12 @@ class DetailActivity : AppCompatActivity() {
         binding = ActivityDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModel = ViewModelProvider(this).get<DetailViewModel>().apply {
-            item.observe(this@DetailActivity, Observer {
+        viewModel = getViewModel {
+            observe(item){
                 supportActionBar?.title = it.title
                 binding.detailThumb.loadUrl(it.url)
                 binding.detailVideoIndicator.setVisible(it.type == MediaItem.Type.VIDEO)
-            })
+            }
         }
 
         val itemId = intent.getIntExtra(Extra_IDE,-1)
