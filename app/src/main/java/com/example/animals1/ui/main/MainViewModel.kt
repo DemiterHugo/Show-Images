@@ -7,13 +7,17 @@ import androidx.lifecycle.viewModelScope
 import com.example.animals1.data.Filter
 import com.example.animals1.data.MediaItem
 import com.example.animals1.data.MediaProvider
+import com.example.animals1.data.MediaProviderImpl
 import com.example.animals1.ui.Event
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.CoroutineContext
 
-class MainViewModel(): ViewModel(){
+//pasamos MediaProvider y Dispatchers.IO por el constructor para poder hacer el test.
+class MainViewModel(private val mediaProvider: MediaProvider = MediaProviderImpl,
+                    private val ioDispatcher: CoroutineContext = Dispatchers.IO): ViewModel(){
 
     private val _progessVisible = MutableLiveData<Boolean>()
     val progressVisible: LiveData<Boolean> get() = _progessVisible
@@ -28,13 +32,13 @@ class MainViewModel(): ViewModel(){
     fun onFilterSelected(filter: Filter){
         viewModelScope.launch {
             _progessVisible.value = true
-            _items.value = withContext(Dispatchers.IO){getFilteredItems(filter)}
+            _items.value = withContext(ioDispatcher){getFilteredItems(filter)}
             _progessVisible.value = false
         }
     }
 
     private fun getFilteredItems(filter: Filter):List<MediaItem>{
-        return MediaProvider.getItems().let {
+        return mediaProvider.getItems().let {
             when(filter){
                 Filter.None -> it
                 is Filter.ByType -> it.filter { mediaItem -> mediaItem.type == filter.type }
