@@ -12,11 +12,14 @@ import com.example.animals1.ui.getViewModel
 import com.example.animals1.ui.loadUrl
 import com.example.animals1.ui.observe
 import com.example.animals1.ui.setVisible
+import org.koin.android.scope.ScopeActivity
+import org.koin.android.viewmodel.ext.android.viewModel
 
-class DetailActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: DetailViewModel
-    lateinit var binding: ActivityDetailBinding
+class DetailActivity : ScopeActivity() {
+
+    private lateinit var binding: ActivityDetailBinding
+    private val viewModel: DetailViewModel by viewModel()
 
     companion object {
         const val Extra_IDE = "DetailActivity:extraId"
@@ -27,7 +30,7 @@ class DetailActivity : AppCompatActivity() {
         binding = ActivityDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModel = getViewModel {
+        with(viewModel)  {
             observe(item){
                 supportActionBar?.title = it.title
                 binding.detailThumb.loadUrl(it.url)

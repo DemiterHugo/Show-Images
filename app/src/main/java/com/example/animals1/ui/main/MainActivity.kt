@@ -17,12 +17,14 @@ import com.example.animals1.ui.getViewModel
 import com.example.animals1.ui.observe
 import com.example.animals1.ui.setVisible
 import com.example.animals1.ui.startActivity
+import org.koin.android.scope.ScopeActivity
+import org.koin.android.viewmodel.ext.android.viewModel
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ScopeActivity() {
 
 private lateinit var binding:ActivityMainBinding
-    private lateinit var viewModel: MainViewModel
+    private  val viewModel: MainViewModel by viewModel()
     private var mediaAdapter = MediaAdapter {viewModel.onItemClicked(it)}
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,7 +32,7 @@ private lateinit var binding:ActivityMainBinding
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModel = getViewModel {
+        with(viewModel) {
             observe(progressVisible){ binding.progress.setVisible(it)}
             observe(items){mediaAdapter.items = it}
             observe(navigateToDetail){

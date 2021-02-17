@@ -16,8 +16,8 @@ import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
 //pasamos MediaProvider y Dispatchers.IO por el constructor para poder hacer el test.
-class MainViewModel(private val mediaProvider: MediaProvider = MediaProviderImpl,
-                    private val ioDispatcher: CoroutineContext = Dispatchers.IO): ViewModel(){
+class MainViewModel(private val mediaProvider: MediaProvider,
+                    private val ioDispatcher: CoroutineContext): ViewModel(){
 
     private val _progessVisible = MutableLiveData<Boolean>()
     val progressVisible: LiveData<Boolean> get() = _progessVisible

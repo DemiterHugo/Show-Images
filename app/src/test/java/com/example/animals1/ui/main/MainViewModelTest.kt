@@ -42,7 +42,7 @@ class MainViewModelTest {
 
     @After
     fun tearDown() {
-        Dispatchers.resetMain() // lo volvemos a porner el dispatcher a threadMain
+        Dispatchers.resetMain() // volvemos a porner el dispatcher a threadMain
         testDispatcher.cleanupTestCoroutines() //cancela todas las corrutinas que esten asociadas a ese dispatcher
     }
 

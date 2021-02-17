@@ -13,8 +13,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
-class DetailViewModel(private val mediaProvider: MediaProvider = MediaProviderImpl,
-                      private val ioDispatcher: CoroutineContext = Dispatchers.IO): ViewModel() {
+class DetailViewModel(private val mediaProvider: MediaProvider,
+                      private val ioDispatcher: CoroutineContext): ViewModel() {
 
     private val _item = MutableLiveData<MediaItem>()
     val item: LiveData<MediaItem> get() = _item
